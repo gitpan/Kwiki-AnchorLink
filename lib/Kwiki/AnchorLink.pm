@@ -2,7 +2,7 @@ package Kwiki::AnchorLink;
 use strict;
 use warnings;
 use Kwiki::Plugin '-Base';
-our $VERSION = '0.01';
+our $VERSION = '0.02';
 
 const class_id => 'anchor_link';
 const class_title => 'Anchor Link';
@@ -20,7 +20,10 @@ use base 'Spoon::Formatter::WaflPhrase';
 sub to_html {
     my ($anchor,$title) = split(/\s+/,$self->arguments,2);
     $title ||= $anchor;
-    return qq{<a href="#$anchor">$title</a>};
+    unless($anchor =~ /(.+)#(.+)/) {
+	return qq{<a href="#$anchor">$title</a>};
+    }
+    return qq{<a href="?$anchor">$title</a>};
 }
 
 package Kwiki::AnchorLink::Point;
@@ -65,8 +68,10 @@ like this:
 The first agrument to {anchorlink} is taken as the name of anchor
 point, and the rests are used as the link title.
 
-So far it doesn't not generate corss-page anchor link, so please
-be patient, or send me patch. :)
+If you want to link to an anchor inside another page, sinply
+prepand the page id,and a '#':
+
+    {anchorlink: MyPage#mybio Look at My Bio}
 
 =head1 COPYRIGHT
 
